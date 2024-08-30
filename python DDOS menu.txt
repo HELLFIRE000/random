@@ -1,0 +1,83 @@
+import socket
+import requests
+
+def ip_lookup():
+    ip = input("Enter the IP address: ")
+    try:
+        host = socket.gethostbyaddr(ip)
+        print(f"Host information for {ip}: {host}")
+    except socket.herror:
+        print("Host information could not be found.")
+
+def phone_lookup():
+    phone = input("Enter the phone number: ")
+    api_key = "your_api_key_here"
+    url = f"https://api.phone_lookup_service.com/lookup?phone={phone}&key={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("Phone lookup result:")
+        print(response.json())
+    else:
+        print("Failed to lookup phone number.")
+
+def cloudflare_bypass():
+    url = input("Enter the website URL: ")
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        print(f"Website content from {url}:\n{response.text[:500]}")  # Show first 500 characters
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+
+def ddos_menu():
+    print("DDoS Options:")
+    print("1. Start HTTP Flood")
+    print("2. Start SYN Flood")
+    print("3. Start UDP Flood")
+    print("4. Return to Main Menu")
+    
+    choice = input("Choose an option: ")
+    
+    if choice == "1":
+        print("HTTP Flood initiated...")
+        # Insert HTTP Flood code here
+    elif choice == "2":
+        print("SYN Flood initiated...")
+        # Insert SYN Flood code here
+    elif choice == "3":
+        print("UDP Flood initiated...")
+        # Insert UDP Flood code here
+    elif choice == "4":
+        return
+    else:
+        print("Invalid option. Returning to main menu.")
+
+def main_menu():
+    while True:
+        print("Penetration Testing Menu")
+        print("1. IP Lookup")
+        print("2. Phone Lookup")
+        print("3. Cloudflare Bypass")
+        print("4. DDoS Menu")
+        print("5. Exit")
+        
+        choice = input("Choose an option: ")
+        
+        if choice == "1":
+            ip_lookup()
+        elif choice == "2":
+            phone_lookup()
+        elif choice == "3":
+            cloudflare_bypass()
+        elif choice == "4":
+            ddos_menu()
+        elif choice == "5":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+if __name__ == "__main__":
+    main_menu()

